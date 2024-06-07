@@ -60,6 +60,9 @@ class InventoryStrategy:
         for price in self.prices:
             self.update_inventory(price, t)
             t += self.dt
+
+        self.pnl += self.inventory*self.prices[-1]
+
         return self.pnl
     
     def reset(self, prices=None):
@@ -105,6 +108,8 @@ class BenchmarkStrategy:
         for price in self.prices:
             bid, ask = self.calculate_bid_ask(price)
             self.update_inventory(bid, ask, price)
+
+        self.pnl += self.inventory*self.prices[-1]
 
         return self.pnl
     
