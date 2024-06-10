@@ -1,12 +1,6 @@
 
 import numpy as np
-import time
 
-# Get the current Unix timestamp
-current_time = int(time.time())
-
-# Set the NumPy random seed using the current Unix timestamp
-np.random.seed(current_time)
 
 # Here we will have functions to retrieve prices for our proposed 'inventory' strategy
 class InventoryStrategy:
@@ -63,7 +57,7 @@ class InventoryStrategy:
 
         self.pnl += self.inventory*self.prices[-1]
 
-        return self.pnl
+        return self.pnl, self.inventory
     
     def reset(self, prices=None):
         self.inventory = 0
@@ -111,7 +105,7 @@ class BenchmarkStrategy:
 
         self.pnl += self.inventory*self.prices[-1]
 
-        return self.pnl
+        return self.pnl, self.inventory
     
     # reset class between runs
     def reset(self, spread, prices=None):

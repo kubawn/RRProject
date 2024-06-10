@@ -2,8 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-current_time = int(time.time())
-np.random.seed(current_time)
 
 def simulate_mid_price(S0, sigma, T, dt):
     table = [1, -1]
