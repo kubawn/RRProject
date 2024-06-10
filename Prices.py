@@ -16,27 +16,23 @@ class InventoryStrategy:
         self.inventory = 0 # current inventory
         self.pnl = 0 # current pnl
 
+    # get bid and ask for a given moment
     def calculate_bid_ask(self, mid_price, t):
-        # Calculate the reservation price
-        reservation_price = mid_price - self.inventory * self.theta * self.sigma**2 * (self.T - t)
-        
-        # Calculate the optimal distances for bid and ask prices
-        delta_b = self.sigma**2 * (self.T - t) + (2 / self.theta) * np.log(1 + self.theta / self.k)
-        delta_a = self.sigma**2 * (self.T - t) + (2 / self.theta) * np.log(1 + self.theta / self.k)
-        
-        # Calculate bid and ask prices
-        bid_price = reservation_price - delta_b
-        ask_price = reservation_price + delta_a
+        reservation_price = mid_price - self.inventory * self.theta * (self.sigma**2) * (self.T - t)
+        spr = self.theta*(self.sigma**2)*(self.T - self.dt) + (2/self.theta)*np.log(1 + (self.theta/self.k))
+ 
+        bid_price = reservation_price - spr/2
+        ask_price = reservation_price + spr/2
 
         self.spreads.append(ask_price - bid_price)
         
         return bid_price, ask_price
     
-    def update_inventory(self, mid_price, t):
-        bid, ask = self.calculate_bid_ask(mid_price, t)
+    # update inventory for a given moment
+    def update_inventory(self, ask, bid, mid_price, t):
 
-        lambda_b = self.A * np.exp(-self.k * (ask - mid_price))
-        lambda_a = self.A * np.exp(-self.k * (mid_price - bid))
+        lambda_a = self.A * np.exp(-self.k * (ask - mid_price))
+        lambda_b = self.A * np.exp(-self.k * (mid_price - bid))
         
         if np.random.rand() < lambda_b * self.dt:
             self.inventory += 1
@@ -51,8 +47,12 @@ class InventoryStrategy:
     
     def run_strategy(self):
         t = 0
+        ask = None
+        bid = None
         for price in self.prices:
-            self.update_inventory(price, t)
+            if ask:
+                self.update_inventory(ask, bid, price, t)
+            bid, ask = self.calculate_bid_ask(price, t)
             t += self.dt
 
         self.pnl += self.inventory*self.prices[-1]
@@ -85,9 +85,8 @@ class BenchmarkStrategy:
     # update inventory for a given moment
     def update_inventory(self, bid, ask, price):
         
-        # Simulate arrival of market orders
-        lambda_b = self.A * np.exp(-self.k * (ask - price))
-        lambda_a = self.A * np.exp(-self.k * (price - bid))
+        lambda_a = self.A * np.exp(-self.k * (ask - price))
+        lambda_b = self.A * np.exp(-self.k * (price - bid))
         
         if np.random.rand() < lambda_b * self.dt:
             self.inventory += 1
@@ -99,9 +98,12 @@ class BenchmarkStrategy:
 
     # get pnl for a single simulation
     def run_strategy(self):
+        bid = None
+        ask = None
         for price in self.prices:
+            if ask:
+                self.update_inventory(bid, ask, price)
             bid, ask = self.calculate_bid_ask(price)
-            self.update_inventory(bid, ask, price)
 
         self.pnl += self.inventory*self.prices[-1]
 
