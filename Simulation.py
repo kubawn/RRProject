@@ -31,7 +31,7 @@ def create_comparison_table(res_inv, res_ben, inv_inv, inv_ben):
     df = pd.DataFrame(data)
     return df
 
-def run_simulation(n):
+def run_simulation(n, theta=0.1):
     np.random.seed(int(time.time()))
 
     res_inv = []
@@ -42,7 +42,7 @@ def run_simulation(n):
     prices = simulate_mid_price(100, 2, 1, 0.005) 
 
     for i in range(n):
-        inv = InventoryStrategy(prices=prices)
+        inv = InventoryStrategy(prices=prices, theta=theta)
         pnl, f_inv = inv.run_strategy()
         res_inv.append(pnl)
         inv_inv.append(f_inv)
@@ -51,11 +51,14 @@ def run_simulation(n):
         inv_bench.append(f_inv)
         res_bench.append(pnl)
 
-    num_bins = 20
+    # Combine the PnL data to get the common range for bins
+    all_pnls = res_inv + res_bench
+    num_bins = 40
+    bins = np.linspace(min(all_pnls), max(all_pnls), num_bins)
 
     # Plot histograms
-    plt.hist(res_inv, bins=num_bins, alpha=0.5, label='Inventory Strategy PnL')
-    plt.hist(res_bench, bins=num_bins, alpha=0.5, label='Benchmark Strategy PnL')
+    plt.hist(res_inv, bins=bins, alpha=0.5, label='Inventory Strategy PnL')
+    plt.hist(res_bench, bins=bins, alpha=0.5, label='Benchmark Strategy PnL')
 
     # Add labels and legend
     plt.xlabel('PnL Values')
