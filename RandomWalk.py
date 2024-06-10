@@ -18,17 +18,17 @@ def simulate_mid_price(S0, sigma, T, dt):
     return S
 
 # Parameters
-S0 = 100  # Initial stock price
-sigma = 0.2  # Volatility
-T = 1.0  # Total time period (e.g., 1 year)
-dt = 0.01  # Time step (e.g., daily steps)
+#S0 = 100  # Initial stock price
+#sigma = 0.2  # Volatility
+#T = 1.0  # Total time period (e.g., 1 year)
+#dt = 0.01  # Time step (e.g., daily steps)
 
 #Simulate mid-price
-mid_price = simulate_mid_price(S0, sigma, T, dt)
+#mid_price = simulate_mid_price(S0, sigma, T, dt)
 
 #Plot the results
-plt.plot(mid_price)
-plt.title("Simulated Mid-Price of Stock")
-plt.xlabel("Time Steps")
-plt.ylabel("Price")
-plt.show()
+#plt.plot(mid_price)
+#plt.title("Simulated Mid-Price of Stock")
+#plt.xlabel("Time Steps")
+#plt.ylabel("Price")
+#plt.show()
